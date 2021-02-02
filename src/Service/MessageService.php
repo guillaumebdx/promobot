@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+
+
 class MessageService extends AbstractAuth
 {
     /**
@@ -9,16 +11,26 @@ class MessageService extends AbstractAuth
      * @var integer
      */
     const MAX_TWEET = 20;
-    
+
     /**
      * Search url
      * @var string
      */
     private $searchUrl = 'search/tweets';
-    
+
     private $showUrl = 'statuses/show';
-    
+
     private $retweetUrl = 'statuses/retweets';
+
+    private $tweetUrl = 'statuses/update';
+
+    public function sendMessage(string $message)
+    {
+        if ($message === '') {
+            throw new \Exception('Votre message ne peut être vide');
+        }
+        $this->client->post($this->tweetUrl, ['status' => ' hey @basic_stuff check this out : ' . $message]);
+    }
 
     /**
      * Search tweets
@@ -28,22 +40,22 @@ class MessageService extends AbstractAuth
     public function search(array $keywords = [], array $options = [])
     {
         try {
-            
+
             $options = array_merge($this->generateDefaultOption(), $options);
             $options['q'] = implode(' ', $keywords);
             $result = $this->client->get($this->searchUrl, $options);
             if (!empty($result->errors)) {
                 $this->handleError($result->errors);
             }
-            dd($result);
+            return $result;
         } catch (\Exception $e) {
             echo 'Un problème est survenu : ' . $e->getMessage();
         }
-        
+
     }
 
     /**
-     * 
+     *
      * @param int $id
      * @param array $options
      */

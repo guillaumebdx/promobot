@@ -7,7 +7,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Service\MessageService;
 
 /**
- * 
+ *
  * @author guillaume
  * @Route("/message", name="message_")
  *
@@ -20,15 +20,8 @@ class MessageController extends AbstractController
      */
     public function search(MessageService $message)
     {
-        $message->search(
-            [
-                'macron',
-                'oui'
-            ],
-            [
-                'exclude_replies' => true,
-            ]
-            );
+        $message->search(['PROMO10',],['exclude_replies' => true,]);
+
     }
 
     /**
@@ -47,5 +40,18 @@ class MessageController extends AbstractController
     public function showRetweets(MessageService $message, $id)
     {
         $message->getRetweetsById($id);
+    }
+
+    /**
+     * @Route("/send", name="send")
+     * @param MessageService $message
+     */
+    public function send(MessageService $message)
+    {
+        $promoTweets = $message->search(['PROMO10',],['exclude_replies' => true,]);
+
+        $message->sendMessage($promoTweets->statuses[rand(0,5)]->full_text);
+
+        dd('ok');
     }
 }
